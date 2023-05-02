@@ -18,7 +18,7 @@ import pvs.app.service.AuthService;
 
 @RestController
 
-
+@CrossOrigin("http://localhost:3000/")
 public class AuthController {
     private final AuthService authService;
 
@@ -28,6 +28,7 @@ public class AuthController {
 
     @PostMapping(value = "/auth/verifyJwt")
     public void isValidToken(@RequestHeader("Authorization") String token) {
+        System.out.println("Valid");
         final boolean isValidToken = authService.isValidToken(token);
         if (isValidToken) ResponseEntity.ok().build();
         else ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -36,11 +37,13 @@ public class AuthController {
     @PostMapping(value = "/auth/login")
     public String login(@NotNull @RequestBody MemberDTO memberDTO) {
         // return jwt if login success
+        System.out.println(" ");
         return authService.login(memberDTO.getUsername(), memberDTO.getPassword());
     }
 
     @PostMapping(value = "/auth/register")
     public String register(@RequestBody MemberDTO memberDTO) {
+        System.out.println("REG");
         if (!authService.isValidPassword(memberDTO.getPassword())) return "InvalidPassword";
         return authService.register(memberDTO) ? "RegisterSuccess" : "RegisterFailed";
     }
@@ -48,7 +51,8 @@ public class AuthController {
 
     @GetMapping(value = "/auth/memberId")
     public Long getMemberID(@RequestParam("username") String username) {
-        System.out.println(username);
-        return 262L;//authService.getMemberId(username);
+
+        System.out.println("MID");
+        return authService.getMemberId(username);
     }
 }

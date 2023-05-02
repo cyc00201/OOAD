@@ -19,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Enumeration;
 
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
@@ -33,9 +34,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
                                     @NotNull FilterChain chain) throws ServletException, IOException {
         final String token = request.getHeader(AUTHORIZATION);
-        System.out.println("TO|"+token);
-        if (token != null) {
 
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            String headerValue = request.getHeader(headerName);
+            System.out.println(headerName + ": " + headerValue);
+        }
+        if (token != null) {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 if (jwtTokenUtil.isValidToken(token)) {
                     final String username = jwtTokenUtil.getUsernameFromToken(token);

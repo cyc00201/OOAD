@@ -54,7 +54,9 @@ export default function Login() {
       const credential = {
             username: username.trim(),
             password,
-          }
+
+      }
+
       try {
         const response = await Axios.post('http://localhost:9100/pvs-api/auth/login', credential)
 
@@ -65,12 +67,19 @@ export default function Login() {
       }
     }
 
- const getMemberId = async() => {
+ const getMemberId = async(jwt) => {
 
+    const config = {
+      headers: {
+         Authorization: jwt,
+      },
+      params: {
+        username: username.trim(),
+      },
+    };
     try {
-
-      const response = await Axios.get('http://localhost:9100/pvs-api/auth/memberId',
-                                        {params:{username:username.trim()} })
+      // alert(jwt)
+      const response = await Axios.get('http://localhost:9100/pvs-api/auth/memberId',config)
       return response.data
     }
     catch (e) {
@@ -90,13 +99,14 @@ export default function Login() {
 
     const jwt = await getJWTFrom()
 
+
     if (jwt && jwt !== '') {
 
 
-      //localStorage.setItem('Authorization', jwt)
-      //Axios.defaults.headers.common.Authorization = jwt
+      localStorage.setItem('jwtToken', jwt)
+      Axios.defaults.headers.common.Authorization = jwt
 
-      const memberId  = 262;//= await getMemberId()
+      const memberId  =  await getMemberId(jwt)
 
       if (memberId && memberId !== '') {
         localStorage.setItem('memberId', memberId)
