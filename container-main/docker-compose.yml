@@ -1,0 +1,71 @@
+version: '3'
+
+
+services:
+
+  pvs-frontend:
+    image: xanonymous/pvs-frontend
+    ports:
+      - '4344:3000'
+    networks:
+      - pvs_net
+    environment:
+      - DB_URL = jdbc:postgresql://localhost:5432/PVS
+      - PVS_GITHUB_TOKEN= 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
+      - PVS_SONAR_TOKEN = squ_721171fa3ab2fa2e0847baf6e22fc89fd36c74d9
+      - PVS_DB_USER = postgres
+      - PVS_DB_PASS= postgres
+      - PVS_GITLAB_TOKEN= 1234
+      - PVS_TRELLO_KEY= 133127c37fb9309b9196f6b77f58337f
+      - PVS_TRELLO_TOKEN= b33efa1af61fe515b31b6180e981268add4ff5cc4e21aeb6cd009a3350549923
+      - JWT_SALT= 1234
+      - MODE=production
+    restart: unless-stopped
+
+  pvs-backend:
+    image: xanonymous/pvs-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "9100:9100"
+    networks:
+      - pvs_net
+
+    environment:
+    - DB_URL = jdbc:postgresql://localhost:5432/PVS
+    - PVS_GITHUB_TOKEN= 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
+    - PVS_SONAR_TOKEN = squ_721171fa3ab2fa2e0847baf6e22fc89fd36c74d9
+    - PVS_DB_USER = postgres
+    - PVS_DB_PASS= postgres
+    - PVS_GITLAB_TOKEN= 1234
+    - PVS_TRELLO_KEY= 133127c37fb9309b9196f6b77f58337f
+    - PVS_TRELLO_TOKEN= b33efa1af61fe515b31b6180e981268add4ff5cc4e21aeb6cd009a3350549923
+    - JWT_SALT= 1
+    - MODE=production
+    restart: always
+
+  db:
+    image: postgres:14-alpine
+    ports:
+      - "5432"
+    networks:
+      - pvs_net
+    environment:
+      - POSTGRES_USER= postgres
+      - POSTGRES_PASSWORD= postgres
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  pvs_net:

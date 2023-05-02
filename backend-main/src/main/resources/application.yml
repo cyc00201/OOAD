@@ -1,0 +1,41 @@
+server:
+  port: 9100
+  servlet:
+    context-path: /pvs-api
+
+message:
+  exception: "exception error"
+  success: "success!"
+  fail: "fail!"
+  invalid:
+    url: "Invalid URL ..."
+
+webClient:
+  baseUrl:
+    sonar: "https://sonarcloud.io/api"
+    github: "https://api.github.com/graphql"
+    test: ""
+
+spring:
+  codec:
+    max-in-memory-size: 524288000
+  profiles:
+    active: test
+  datasource:
+    url: jdbc:postgresql://localhost:5432/PVS
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: true
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  jackson:
+    time-zone: Asia/Taipei
