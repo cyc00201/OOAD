@@ -5,7 +5,6 @@ import de.mkammerer.argon2.Argon2Factory;
 import org.modelmapper.ModelMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,9 +27,8 @@ import pvs.app.utils.JwtTokenUtil;
 
 public class AuthService {
 
-    private final AuthenticationManager authenticationManager;
 
-    private static AuthenticationManager am = new SampleAuthenticationManager();
+    private final AuthenticationManager am = new SampleAuthenticationManager();
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
     private final JwtTokenUtil jwtTokenUtil;
@@ -38,10 +36,9 @@ public class AuthService {
     @Autowired
     private final MemberDAO memberDAO;
 
-    AuthService(AuthenticationManager authenticationManager,
+    AuthService(
                 JwtTokenUtil jwtTokenUtil,
                 MemberDAO memberDAO) {
-        this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.memberDAO = memberDAO;
         this.userDetailsServiceImpl = new UserDetailsServiceImpl(this.memberDAO);
@@ -59,7 +56,7 @@ public class AuthService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
             String Token = jwtTokenUtil.generateToken(userDetails);
-
+            System.out.println(userDetails);
             return Token;
         } catch (AuthenticationException e) {
             System.out.println("Authentication failed: " + e.getMessage());
@@ -79,8 +76,9 @@ public class AuthService {
         memberDTO.setPassword(hashedPassword);
         Members member = modelMapper.map(memberDTO, Members.class);
         this.memberDAO.save(member);
+
         boolean r = memberDAO.findById(member.getMemberId()).isEmpty();
-     //   System.out.println(!r);
+        //System.out.println(!r);
         return !r;
     }
 
@@ -99,7 +97,7 @@ public class AuthService {
 
     public Long getMemberId(String username) {
         Members member = this.memberDAO.findByUsername(username);
-        System.out.println(this.memberDAO);
+        System.out.println(member.getMemberId());
         return member == null ? null : member.getMemberId();
     }
 }

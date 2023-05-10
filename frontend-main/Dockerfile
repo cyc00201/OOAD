@@ -1,21 +1,17 @@
 FROM node:alpine
 
-ARG WORKPLACE=/pvs-frontend
-
-COPY ./ $WORKPLACE
-
+ARG WORKPLACE= /pvs-frontend
+ARG PORT=3000
 WORKDIR $WORKPLACE
+ENV NODE_OPTIONS=--openssl-legacy-provider
 
-RUN npm i -g pnpm serve && \
-    SHELL="/bin/bash" pnpm setup && \
-    pnpm i --frozen-lockfile &&  \
-    pnpm build
+Run ls
 
-RUN mkdir ../to_rm && \
-    mv ./* ../to_rm && \
-    mv ../to_rm/dist ./ && \
-    rm -rf ../to_rm
+
+
+
 
 ENV NODE_ENV=production
+EXPOSE $PORT
 
-CMD ["serve", "-s", "dist", "-C"]
+

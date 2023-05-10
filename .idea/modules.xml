@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/OOAD.iml" filepath="$PROJECT_DIR$/.idea/OOAD.iml" />
-      <module fileurl="file://$PROJECT_DIR$/backend-main/pvs.iml" filepath="$PROJECT_DIR$/backend-main/pvs.iml" />
     </modules>
   </component>
 </project>

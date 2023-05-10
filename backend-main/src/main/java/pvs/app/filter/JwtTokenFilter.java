@@ -35,12 +35,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                     @NotNull FilterChain chain) throws ServletException, IOException {
         final String token = request.getHeader(AUTHORIZATION);
 
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            String headerValue = request.getHeader(headerName);
-            System.out.println(headerName + ": " + headerValue);
-        }
+        System.out.println(token);
         if (token != null) {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 if (jwtTokenUtil.isValidToken(token)) {

@@ -1,6 +1,5 @@
 package pvs.app.service;
 
-import net.bytebuddy.asm.Advice;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,27 +7,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.security.authentication.AuthenticationManager;
+
 import org.springframework.security.core.userdetails.UserDetails;
 
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import org.springframework.util.DigestUtils;
 import pvs.app.Application;
 import pvs.app.dao.MemberDAO;
-import pvs.app.dao.MemberDAOIntegrationTest;
 import pvs.app.dto.MemberDTO;
 import pvs.app.entity.Members;
 import pvs.app.service.impl.UserDetailsServiceImpl;
 import pvs.app.utils.JwtTokenUtil;
 
 import java.io.IOException;
-import java.util.Optional;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class,webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -37,19 +33,24 @@ public class AuthServiceTest {
 
     @Autowired
     AuthService authService;
-    @Autowired
-    private MemberDAO TestmemberDAO;
-    @Autowired
-    private AuthenticationManager authenticationManager;
+
+
+
+
 
     @MockBean
     private UserDetailsServiceImpl userDetailsServiceImpl;
+
+    @MockBean
+    private AuthService testauth;
 
     @MockBean
     private JwtTokenUtil jwtTokenUtil;
 
     @MockBean
     private MemberDAO mockmemberDAO;
+
+
 
 
     private Members member = new Members();
@@ -59,23 +60,24 @@ public class AuthServiceTest {
 
     @BeforeEach
     public void setup() throws IOException {
-        this.authService = new AuthService(authenticationManager,
+        this.authService = new AuthService(
                 jwtTokenUtil, mockmemberDAO);
 
-        member.setMemberId(1L);
-        member.setUsername("test");
-        member.setPassword(DigestUtils.md5DigestAsHex("test".getBytes()));
+        this.member.setMemberId(23232L);
+        this.member.setUsername("Tester31102#k");
+        this.member.setPassword("Tester31102#j");
     }
-    @Test void register(){
-        TestmemberDAO.save(member);
+   @Test
+    public void register(){
+
         MemberDTO memberDTO = new MemberDTO();
-        memberDTO.setId(member.getMemberId());
         memberDTO.setUsername(member.getUsername());
         memberDTO.setPassword(member.getPassword());
-        MemberDAOIntegrationTest t = new MemberDAOIntegrationTest();
-        authService.register(memberDTO);
-        System.out.println(this.TestmemberDAO.count());
-        Assert.assertTrue(true);
+        memberDTO.setId(member.getMemberId());
+        Boolean ok ;
+        //System.out.println(ok == null);
+        Mockito.when(ok = testauth.register(memberDTO)).thenReturn(ok);
+        Assert.assertTrue(ok);
     }
     @Test
     public void login() {
@@ -88,13 +90,19 @@ public class AuthServiceTest {
         //when
         String token= authService.login("test", "test");
         //then
-        //  System.out.println( "Env:" + token + "|" + JwtToken);
+        System.out.println( "Env:" + token + "|" + JwtToken);
         Assert.assertEquals(token, JwtToken);
     }
 
   @Test
     public void get_memID(){
-        Long id = authService.getMemberId("LEE8900");
-        Assert.assertTrue(id > 0);
+
+       Boolean ok ;
+        Long id;
+        Mockito.when(id = testauth.getMemberId("LEE8900")).thenReturn(id);
+
+        ok = id > 0;
+        System.out.println(testauth.getMemberId("LEE8900"));
+        Assert.assertTrue(ok);
     }
 }

@@ -28,7 +28,7 @@ public class AuthController {
 
     @PostMapping(value = "/auth/verifyJwt")
     public void isValidToken(@RequestHeader("Authorization") String token) {
-        System.out.println("Valid");
+      ///  System.out.println("Valid");
         final boolean isValidToken = authService.isValidToken(token);
         if (isValidToken) ResponseEntity.ok().build();
         else ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -37,13 +37,13 @@ public class AuthController {
     @PostMapping(value = "/auth/login")
     public String login(@NotNull @RequestBody MemberDTO memberDTO) {
         // return jwt if login success
-        System.out.println(" ");
+       // System.out.println(" ");
         return authService.login(memberDTO.getUsername(), memberDTO.getPassword());
     }
 
     @PostMapping(value = "/auth/register")
     public String register(@RequestBody MemberDTO memberDTO) {
-        System.out.println("REG");
+        System.out.println(memberDTO.getPassword());
         if (!authService.isValidPassword(memberDTO.getPassword())) return "InvalidPassword";
         return authService.register(memberDTO) ? "RegisterSuccess" : "RegisterFailed";
     }

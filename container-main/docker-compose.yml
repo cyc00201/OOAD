@@ -4,7 +4,7 @@ version: '3'
 services:
 
   pvs-frontend:
-    image: xanonymous/pvs-frontend
+    image: test/pvsfrontend
     ports:
       - '4344:3000'
     networks:
@@ -23,7 +23,8 @@ services:
     restart: unless-stopped
 
   pvs-backend:
-    image: xanonymous/pvs-backend
+
+    image: test/pvsbackend
     depends_on:
       db:
         condition: service_healthy

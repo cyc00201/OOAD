@@ -7,7 +7,7 @@ on:
 jobs:
   docker-image:
     env:
-      IMAGE: xanonymous/pvs-backend
+      IMAGE: test/pvs-backend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

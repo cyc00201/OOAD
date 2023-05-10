@@ -50,8 +50,7 @@ public class MemberDAOIntegrationTest {
 
     @Test
     public void whenFindByAccount_thenReturnMember() {
-
-        Members foundEntity = memberDAO.findByUsername(member01.getUsername());
+        Members foundEntity = this.memberDAO.findByUsername(member01.getUsername());
         assertEquals(foundEntity.getUsername(), member01.getUsername());
     }
 

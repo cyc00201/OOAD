@@ -39,6 +39,8 @@ export default function Login() {
   const history = useHistory()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [captcha,setCaptcha] = useState('')
+   const [Pcaptcha,setPCaptcha] = useState('')
   const [accountOperationHint, setAccountOperationHint] = useState('')
   const [accountChecking, setAccountChecking] = useState(false)
   const accountCheckingEnd = () => {
@@ -50,7 +52,7 @@ export default function Login() {
     setAccountChecking(true)
   }
    const getJWTFrom = async() => {
-
+       //post login data
       const credential = {
             username: username.trim(),
             password,
@@ -59,7 +61,6 @@ export default function Login() {
 
       try {
         const response = await Axios.post('http://localhost:9100/pvs-api/auth/login', credential)
-
         return response.data
       }
       catch (e) {
@@ -68,7 +69,7 @@ export default function Login() {
     }
 
  const getMemberId = async(jwt) => {
-
+    //getMemberId to get projectdata
     const config = {
       headers: {
          Authorization: jwt,
@@ -90,7 +91,7 @@ export default function Login() {
 
   const login = async() => {
     accountCheckingStart()
-    if (!(username?.trim()?.length) || !(password?.toString()?.length)) {
+    if (!(username?.trim()?.length) || !(password?.toString()?.length)||!(captcha?.trim()?.length )) {
       alert('不準啦馬的>///<')
       accountCheckingEnd()
       return
@@ -102,7 +103,6 @@ export default function Login() {
 
     if (jwt && jwt !== '') {
 
-
       localStorage.setItem('jwtToken', jwt)
       Axios.defaults.headers.common.Authorization = jwt
 
@@ -110,15 +110,26 @@ export default function Login() {
 
       if (memberId && memberId !== '') {
         localStorage.setItem('memberId', memberId)
-        redirectToProjectSelectPage()
+
+       /* if( captcha.trim() != Captcha0){
+          alert(Captcha0)
+           setAccountOperationHint('InvalidCaptcha')
+        }
+        else{*/
+            //Success
+            redirectToProjectSelectPage()
+        //}
       }
       else {
         setAccountOperationHint('InvalidAccount')
       }
     }
-    else {
+
+    else{
       setAccountOperationHint('InvalidAccount')
     }
+
+
     accountCheckingEnd()
   }
 
@@ -135,7 +146,6 @@ export default function Login() {
       accountCheckingEnd()
       return
     }
-
     const payload = {
       username: username?.trim(),
       password,
@@ -152,14 +162,71 @@ export default function Login() {
 
     accountCheckingEnd()
   }
+  var Captcha0= "0000";
+ const generateCaptcha = async =>{
 
+        const captchaLength = 5;
+        const imageWidth = 150;
+        const imageHeight = 80;
+        const characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        // Generate a random string for the CAPTCHA
+        var captcha = "";
+        for (let i = 0; i < captchaLength; i++) {
+         captcha += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        Captcha0 = captcha
+        // Save the CAPTCHA string to a session variable for later validation
+        sessionStorage.setItem('captcha', captcha);
 
+        // Get the canvas element and context and set its size
+        const canvas = document.getElementById("captchaCanvas");
+        canvas.width = imageWidth;
+        canvas.height = imageHeight;
+        const context = canvas.getContext("2d");
+
+        // Create a blank image with a white background
+        context.fillStyle = "#FFFFFF";
+        context.fillRect(0, 0, imageWidth, imageHeight);
+
+        // Add random lines and dots to the image for distortion
+        for (let i = 0; i < 20; i++) {
+          context.strokeStyle = "rgb(" + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + ")";
+          context.beginPath();
+          context.moveTo(Math.floor(Math.random() * imageWidth), Math.floor(Math.random() * imageHeight));
+          context.lineTo(Math.floor(Math.random() * imageWidth), Math.floor(Math.random() * imageHeight));
+          context.stroke();
+        }
+        for (let i = 0; i < 100; i++) {
+          context.fillStyle = "rgb(" + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + ")";
+          context.beginPath();
+          context.arc(Math.floor(Math.random() * imageWidth), Math.floor(Math.random() * imageHeight), 1, 0, Math.PI * 2);
+          context.fill();
+        }
+
+        // Add the CAPTCHA text to the image with random font, size, and angle
+        const fontSize = 15;
+        const angle = 0;
+        const font = "Arial";
+        context.font = fontSize + "px " + font;
+        for (let i = 0; i < captchaLength; i++) {
+          context.fillStyle = "rgb(" + Math.floor(Math.random() * 100) + "," + Math.floor(Math.random() * 100) + "," + Math.floor(Math.random() * 100) + ")";
+          let x = i * (imageWidth / captchaLength) + Math.floor(Math.random() * (imageWidth / captchaLength - fontSize));
+          let y = Math.floor(Math.random() * (imageHeight - fontSize)) + fontSize;
+        	//console.log(x +"|" + y);
+
+          context.fillText(captcha[i], x, y);
+          context.rotate(angle);
+          }
+
+        return
+ }
 
 
 
   const redirectToProjectSelectPage = () => {
     history.push('/select')
   }
+
 
   return (
     <div className={ classes.root }>
@@ -168,6 +235,7 @@ export default function Login() {
       </Backdrop>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo"/>
+
         {accountOperationHint === 'InvalidPassword'
           && <p className={ classes.accountOperationHint }>Invalid password</p>
         }
@@ -179,6 +247,10 @@ export default function Login() {
         }
         {accountOperationHint === 'RegisterFailed'
           && <p className={ classes.accountOperationHint }>Account already exists</p>
+        }
+
+        {accountOperationHint === 'InvalidCaptcha'
+                  && <p className={ classes.accountOperationHint }>'Incorrect Captcha'</p>
         }
 
         <TextField
@@ -199,6 +271,20 @@ export default function Login() {
           onChange={ (e) => { setPassword(e.target.value) } }
         />
         <br/>
+
+
+        <canvas id = "captchaCanvas"></canvas>
+        <Button variant="contained" onClick={ generateCaptcha } color="primary">
+              generate
+        </Button>
+        <TextField
+                  id="Captcha"
+                  label="Captcha"
+                  type="text"
+                  variant="outlined"
+                  value={ captcha }
+                  onChange={ (e) => { setCaptcha(e.target.value) } }
+                />
         <span className={ classes.actionButtonContainer }>
           <Button className={ classes.registerButton } variant="contained" onClick={ register } color="primary">
             Register
@@ -207,6 +293,7 @@ export default function Login() {
             Login
           </Button>
         </span>
+
       </header>
     </div>
   )
