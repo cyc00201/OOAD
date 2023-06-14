@@ -5,9 +5,9 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.jupiter.api.Test;
-//import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
+//import org.junit.jupiter.api.Test;
+import org.junit.Test;
+//import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -38,7 +38,7 @@ public class GithubApiServiceTest {
 
     private GithubApiService githubApiService;
 
-    @BeforeEach
+    @Before
     public void setup() {
         this.mockWebServer = new MockWebServer();
         this.githubApiService = new GithubApiService(WebClient.builder(), mockWebServer.url("/").toString(), githubCommitService);

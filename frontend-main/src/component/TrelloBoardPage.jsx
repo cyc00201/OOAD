@@ -27,7 +27,6 @@ function TrelloBoardPage() {
   const [boardData, setBoardData] = useState({})
   const [hasBoardData, setHasBoardData] = useState(false)
   const [currentProject, setCurrentProject] = useState({})
-
   const projectId = localStorage.getItem('projectId')
   const jwtToken = localStorage.getItem('jwtToken')
   const memberId = localStorage.getItem('memberId')
@@ -65,6 +64,8 @@ function TrelloBoardPage() {
     }
   }
 
+
+
   useEffect(() => {
     loadInitialProjectInfo()
   }, [])
@@ -92,15 +93,15 @@ function TrelloBoardPage() {
     'Click to add card': 'Click to add card',
     'Delete lane': 'Delete lane',
     'Lane actions': 'Lane actions',
+     'placeholder': {
+          title: 'title',
+         description: 'Description',
+         label: 'label',
+        },
     'button': {
-      'Add lane': 'Add lane',
-      'Add card': 'ADD CARD',
-      'Cancel': 'Cancel',
-    },
-    'placeholder': {
-      title: 'title',
-      description: 'description',
-      label: 'label',
+            'Add lane': 'Add Lane',
+            'Add card': 'Add Card',
+            'Cancel': 'Cancel',
     },
   }
 
@@ -119,11 +120,101 @@ function TrelloBoardPage() {
         {hasBoardData
         && <Board
           data={ boardData }
-          canAddLanes
+         canAddLanes
+          editable
           t={ createTranslate(TEXTS) }
+          onCardUpdate={async function CardClick(cardId,changedata){
+                                                        try{
+                                                            const response = await sendPVSBackendRequest('POST', '/trello/updatecard',  {changedata} )
+                                                            alert ("data updated")
+                                                        }
+                                                        catch(e){
+                                                           alert("error!! Updatecard status:" + e.response?.status)
+                                                            console.error(e)
+
+                                                        }
+          }}
+          onCardAdd = {async function addCard(card,laneId){
+                                              //  alert(JSON.stringify(card)) //show new card json
+                                                try{
+                                                    const response = await sendPVSBackendRequest('POST', '/trello/addcard',  {card,laneId} )
+                                                    alert("add  the card on id:" + laneId + " lane")
+                                                    loadInitialProjectInfo()
+                                                 }
+                                                catch(e){
+                                                    alert("error!! Addcard status:" + e.response?.status)
+                                                    console.error(e)
+                                                    loadInitialProjectInfo()
+
+                                                 }}}
+
+
+          onCardDelete = {async function  deletecard(cardId){
+                                            try{
+
+                                                const response = await sendPVSBackendRequest('POST', '/trello/deletecard',  {cardId} )
+                                                alert("delete  this card")
+                                            }
+                                            catch(e){
+                                                 alert("error!! Deletecard status:" + e.response?.status)
+                                                  console.error(e)
+
+                                            }
+                                    }
+                         }
+          onLaneAdd = {async function addLane(params){
+                                    const trelloBoard = currentProject.repositoryDTOList.find(repo => repo.type === 'trello')
+                                    const url = trelloBoard.url
+                                    alert("New lane created!" + url)
+                                            try{
+
+                                                const response = await sendPVSBackendRequest('POST', '/trello/addlane',  {url,params} )
+
+                                            }
+                                            catch(e){
+                                                 alert("error!! AddLane status:" + e.response?.status)
+                                                  console.error(e)
+                                                   loadInitialProjectInfo()
+
+
+                                            }
+
+                                    }}
+          onLaneDelete = {function deleteLane(laneId){alert("delete L at " + laneId)}}
+
+          handleDragEnd = {async function Dragcard(cardId, laneIdz, laneId, position, card){
+                                            try{
+                                                const response = await sendPVSBackendRequest('POST', '/trello/deletecard',  {cardId} )
+
+                                            }
+                                            catch(e){
+                                                 alert("error!! Deletecard status:" + e.response?.status)
+                                                  console.error(e)
+
+                                            }
+
+
+
+                                         try{
+
+                                           const response = await sendPVSBackendRequest('POST', '/trello/addcard',  {card,laneId} )
+
+                                           alert("Drag the card from " + laneIdz + "to " + laneId)
+                                           loadInitialProjectInfo()
+                                         }
+                                         catch(e){
+                                            alert("error!! Dragcard status:" + e.response?.status)
+                                            console.error(e)
+                                            loadInitialProjectInfo()
+
+                                        }
+
+          }}
+
         />
         }
       </div>
+
     </div>
   )
 }

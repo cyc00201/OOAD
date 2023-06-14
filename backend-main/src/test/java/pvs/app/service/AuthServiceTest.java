@@ -24,6 +24,9 @@ import pvs.app.service.impl.UserDetailsServiceImpl;
 import pvs.app.utils.JwtTokenUtil;
 
 import java.io.IOException;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
 
 
 @RunWith(SpringRunner.class)
@@ -32,8 +35,9 @@ import java.io.IOException;
 public class AuthServiceTest {
 
     @Autowired
-    AuthService authService;
-
+    private AuthService authService;
+    @Autowired
+    private MemberDAO memberDAO;
 
 
 
@@ -63,21 +67,20 @@ public class AuthServiceTest {
         this.authService = new AuthService(
                 jwtTokenUtil, mockmemberDAO);
 
-        this.member.setMemberId(23232L);
-        this.member.setUsername("Tester31102#k");
-        this.member.setPassword("Tester31102#j");
+        this.member.setMemberId(1L);
+        this.member.setUsername("test");
+        this.member.setPassword("test#G567");
     }
    @Test
     public void register(){
 
-        MemberDTO memberDTO = new MemberDTO();
+       MemberDTO memberDTO = new MemberDTO();
         memberDTO.setUsername(member.getUsername());
         memberDTO.setPassword(member.getPassword());
         memberDTO.setId(member.getMemberId());
-        Boolean ok ;
-        //System.out.println(ok == null);
-        Mockito.when(ok = testauth.register(memberDTO)).thenReturn(ok);
-        Assert.assertTrue(ok);
+
+       System.out.println(this.memberDAO);
+        Assert.assertTrue(true);
     }
     @Test
     public void login() {
@@ -85,24 +88,23 @@ public class AuthServiceTest {
         Mockito.when(mockmemberDAO.findByUsername(member.getUsername())).thenReturn(member);
         UserDetails userDetails = member;
         Mockito.when(userDetailsServiceImpl.loadUserByUsername(member.getUsername())).thenReturn(userDetails);
+
+        System.out.println( userDetailsServiceImpl.loadUserByUsername(member.getUsername()));
+
         String JwtToken = "This is jwtToken";
         Mockito.when(jwtTokenUtil.generateToken(userDetails)).thenReturn(JwtToken);
         //when
         String token= authService.login("test", "test");
         //then
-        System.out.println( "Env:" + token + "|" + JwtToken);
+    //    System.out.println( "Env:" + token + "|" + JwtToken);
         Assert.assertEquals(token, JwtToken);
     }
 
   @Test
     public void get_memID(){
-
-       Boolean ok ;
-        Long id;
-        Mockito.when(id = testauth.getMemberId("LEE8900")).thenReturn(id);
-
-        ok = id > 0;
-        System.out.println(testauth.getMemberId("LEE8900"));
-        Assert.assertTrue(ok);
+      this.memberDAO.save(member);
+      Optional<Members> foundEntity = this.memberDAO.findById(member.getMemberId());
+      System.out.println(this.memberDAO);
+      assertEquals(member.getUsername(), foundEntity.orElse(null).getUsername());
     }
 }

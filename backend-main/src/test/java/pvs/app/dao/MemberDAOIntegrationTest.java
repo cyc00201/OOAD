@@ -23,7 +23,7 @@ public class MemberDAOIntegrationTest {
     @Autowired
     private MemberDAO memberDAO;
 
-    private Members member01 = new Members();
+    private final Members member01 = new Members();
 
     @BeforeEach
     public void setup() {
@@ -43,7 +43,7 @@ public class MemberDAOIntegrationTest {
     public void whenFindById_thenReturnMember() {
         this.memberDAO.save(member01);
         Optional<Members> foundEntity = this.memberDAO.findById(member01.getMemberId());
-
+        System.out.println(this.memberDAO);
         assertEquals(member01.getUsername(), foundEntity.orElse(null).getUsername());
 
     }

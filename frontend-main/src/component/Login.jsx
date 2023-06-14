@@ -35,6 +35,7 @@ export default function Login() {
     },
   }))
 
+
   const classes = useStyles()
   const history = useHistory()
   const [username, setUsername] = useState('')
@@ -111,14 +112,14 @@ export default function Login() {
       if (memberId && memberId !== '') {
         localStorage.setItem('memberId', memberId)
 
-       /* if( captcha.trim() != Captcha0){
-          alert(Captcha0)
+       if( captcha.trim() != Pcaptcha.trim()){
+          alert(captcha.trim()+ " " + Pcaptcha.trim())
            setAccountOperationHint('InvalidCaptcha')
         }
-        else{*/
+        else{
             //Success
             redirectToProjectSelectPage()
-        //}
+        }
       }
       else {
         setAccountOperationHint('InvalidAccount')
@@ -128,8 +129,6 @@ export default function Login() {
     else{
       setAccountOperationHint('InvalidAccount')
     }
-
-
     accountCheckingEnd()
   }
 
@@ -162,8 +161,8 @@ export default function Login() {
 
     accountCheckingEnd()
   }
-  var Captcha0= "0000";
- const generateCaptcha = async =>{
+var Captcha0 = "1234"
+ function generateCaptcha(){
 
         const captchaLength = 5;
         const imageWidth = 150;
@@ -174,10 +173,11 @@ export default function Login() {
         for (let i = 0; i < captchaLength; i++) {
          captcha += characters.charAt(Math.floor(Math.random() * characters.length));
         }
-        Captcha0 = captcha
+
         // Save the CAPTCHA string to a session variable for later validation
         sessionStorage.setItem('captcha', captcha);
-
+        Captcha0 =captcha
+        setPCaptcha(captcha.trim())
         // Get the canvas element and context and set its size
         const canvas = document.getElementById("captchaCanvas");
         canvas.width = imageWidth;
@@ -204,7 +204,7 @@ export default function Login() {
         }
 
         // Add the CAPTCHA text to the image with random font, size, and angle
-        const fontSize = 15;
+        const fontSize = 20;
         const angle = 0;
         const font = "Arial";
         context.font = fontSize + "px " + font;
@@ -226,6 +226,7 @@ export default function Login() {
   const redirectToProjectSelectPage = () => {
     history.push('/select')
   }
+
 
 
   return (
@@ -278,7 +279,7 @@ export default function Login() {
               generate
         </Button>
         <TextField
-                  id="Captcha"
+                  id="captcha"
                   label="Captcha"
                   type="text"
                   variant="outlined"

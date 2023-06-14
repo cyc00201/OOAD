@@ -1,5 +1,7 @@
 package pvs.app.service.data;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 
 public class TrelloData {
@@ -49,11 +51,25 @@ public class TrelloData {
         private final String title;
         private final String label;
         private final String description;
+
+
         public Card(String id, String title, String label, String description) {
             this.id = id;
             this.title = title;
             this.label = label;
             this.description = description;
+
+        }
+
+        public Card(String id, String title, String label, String description,String members) {
+            this.id = id;
+            this.title = title;
+            this.label = label;
+            description = description + '\n';
+            description += members;
+
+            this.description = description;
+
         }
     }
 }

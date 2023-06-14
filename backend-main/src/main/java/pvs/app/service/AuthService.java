@@ -97,7 +97,7 @@ public class AuthService {
 
     public Long getMemberId(String username) {
         Members member = this.memberDAO.findByUsername(username);
-        System.out.println(member.getMemberId());
+
         return member == null ? null : member.getMemberId();
     }
 }
